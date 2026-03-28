@@ -1,0 +1,43 @@
+{% extends "bookings/base.html" %}
+
+{% block title %}Список кімнат{% endblock %}
+
+{% block content %}
+<h1>Доступні кімнати</h1>
+
+<h3>Фільтр за категорією:</h3>
+<form method="get">
+    <select name="category">
+        <option value="">-- Всі категорії --</option>
+        {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+                {{ cat.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Фільтрувати</button>
+    <a href="{% url 'room_list' %}">Скинути</a>
+</form>
+
+<hr>
+
+{% if rooms %}
+    {% for room in rooms %}
+        <div>
+            <h2>{{ room.name }}</h2>
+            <p><strong>Категорія:</strong> {{ room.category }}</p>
+            <p><strong>Вмістимість:</strong> {{ room.capacity }} осіб</p>
+            <p><strong>Ціна:</strong> {{ room.price }} грн/год</p>
+            {% if room.features %}
+                <p><strong>Особливості:</strong> {{ room.features }}</p>
+            {% endif %}
+            <a href="{% url 'create_booking' room.id %}">
+                <button>Забронювати</button>
+            </a>
+        </div>
+        <hr>
+    {% endfor %}
+{% else %}
+    <p>Кімнат не знайдено.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "bookings/base.html" %}
+
+{% block title %}Реєстрація{% endblock %}
+
+{% block content %}
+<h1>Реєстрація</h1>
+
+{% if form.errors %}
+    <p><strong>Виправте помилки нижче:</strong></p>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <p>
+        <label>Логін:</label><br>
+        {{ form.username }}
+        {% if form.username.errors %}<br><small>{{ form.username.errors }}</small>{% endif %}
+    </p>
+    <p>
+        <label>Email:</label><br>
+        {{ form.email }}
+        {% if form.email.errors %}<br><small>{{ form.email.errors }}</small>{% endif %}
+    </p>
+    <p>
+        <label>Пароль:</label><br>
+        {{ form.password1 }}
+        {% if form.password1.errors %}<br><small>{{ form.password1.errors }}</small>{% endif %}
+    </p>
+    <p>
+        <label>Підтвердження пароля:</label><br>
+        {{ form.password2 }}
+        {% if form.password2.errors %}<br><small>{{ form.password2.errors }}</small>{% endif %}
+    </p>
+
+    <button type="submit">Зареєструватися</button>
+</form>
+
+<p>Вже маєте акаунт? <a href="{% url 'login' %}">Увійдіть</a></p>
+{% endblock %}
