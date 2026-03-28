@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
 from .models import Room, RoomCategory, Booking
 from .forms import BookingForm, RegisterForm
 
@@ -16,7 +16,7 @@ def room_list(request):
     else:
         rooms = Room.objects.all()
     return render(request, 'bookings/room_list.html', {
-        'rooms': rooms, 
+        'rooms': rooms,
         'categories': categories,
         'selected_category': category_id,
     })
@@ -29,13 +29,20 @@ def create_booking(request, room_id):
         form = BookingForm(request.POST)
         if form.is_valid():
             booking = form.save()
-            
-            subject = f'Підтвердження бронювання: {room.name}'
+
+            confirm_url = request.build_absolute_uri(
+                f'/booking/confirm/{booking.confirmation_token}/'
+            )
+
+            subject = f'Підтвердіть бронювання: {room.name}'
             message = (
-                f'Вітаємо, {booking.user_name}!\n'
-                f'Ваше бронювання на кімнату "{room.name}" '
-                f'з {booking.start_time.strftime("%d.%m.%Y %H:%M")} '
-                f'до {booking.end_time.strftime("%d.%m.%Y %H:%M")} прийнято в обробку.'
+                f'Вітаємо, {booking.user_name}!\n\n'
+                f'Ви забронювали кімнату "{room.name}":\n'
+                f'  Початок: {booking.start_time.strftime("%d.%m.%Y %H:%M")}\n'
+                f'  Кінець:  {booking.end_time.strftime("%d.%m.%Y %H:%M")}\n\n'
+                f'Щоб ПІДТВЕРДИТИ бронювання, перейдіть за посиланням:\n'
+                f'{confirm_url}\n\n'
+                f'Якщо ви не робили цього запиту — просто ігноруйте цей лист.\n'
             )
             try:
                 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [booking.user_email])
@@ -52,6 +59,28 @@ def create_booking(request, room_id):
         form = BookingForm(initial=initial)
 
     return render(request, 'bookings/booking_form.html', {'form': form, 'room': room})
+
+
+def confirm_booking(request, token):
+    booking = get_object_or_404(Booking, confirmation_token=token)
+
+    if booking.status == 'confirmed':
+        already_confirmed = True
+    elif booking.status == 'cancelled':
+        already_confirmed = False
+        return render(request, 'bookings/confirm_booking.html', {
+            'booking': booking,
+            'error': 'Це бронювання вже скасовано і не може бути підтверджено.',
+        })
+    else:
+        booking.status = 'confirmed'
+        booking.save()
+        already_confirmed = False
+
+    return render(request, 'bookings/confirm_booking.html', {
+        'booking': booking,
+        'already_confirmed': already_confirmed,
+    })
 
 
 @login_required
@@ -90,7 +119,11 @@ def login_view(request):
             return redirect(request.POST.get('next') or 'room_list')
         else:
             error = 'Невірний логін або пароль.'
-    return render(request, 'bookings/login.html', {'error': error, 'next': request.GET.get('next', '')})
+    return render(request, 'bookings/login.html', {
+        'error': error,
+        'next': request.GET.get('next', ''),
+    })
+
 
 def logout_view(request):
     if request.method == 'POST':

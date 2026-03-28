@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+import uuid
 
 class RoomCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name="Назва категорії")
@@ -42,6 +43,9 @@ class Booking(models.Model):
     end_time = models.DateTimeField(verbose_name="Час завершення")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Статус")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Створено")
+
+    # Унікальний токен для підтвердження через email
+    confirmation_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     class Meta:
         verbose_name = "Бронювання"
