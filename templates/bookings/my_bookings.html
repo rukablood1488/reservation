@@ -1,0 +1,26 @@
+{% extends "bookings/base.html" %}
+
+{% block title %}Мої бронювання{% endblock %}
+
+{% block content %}
+<h1>Мої бронювання</h1>
+<p>Бронювання прив'язані до email: <strong>{{ user.email }}</strong></p>
+
+<hr>
+
+{% if bookings %}
+    {% for booking in bookings %}
+        <div>
+            <h3>{{ booking.room.name }}</h3>
+            <p><strong>Дата:</strong> {{ booking.start_time|date:"d.m.Y H:i" }} — {{ booking.end_time|date:"d.m.Y H:i" }}</p>
+            <p><strong>Статус:</strong> {{ booking.get_status_display }}</p>
+            <p><strong>Створено:</strong> {{ booking.created_at|date:"d.m.Y H:i" }}</p>
+        </div>
+        <hr>
+    {% endfor %}
+{% else %}
+    <p>У вас ще немає бронювань.</p>
+{% endif %}
+
+<a href="{% url 'room_list' %}"><button>Забронювати кімнату</button></a>
+{% endblock %}

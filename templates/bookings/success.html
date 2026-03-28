@@ -1,0 +1,20 @@
+{% extends "bookings/base.html" %}
+
+{% block title %}Бронювання прийнято{% endblock %}
+
+{% block content %}
+<h1>Бронювання успішно створено!</h1>
+
+<p><strong>Кімната:</strong> {{ booking.room.name }}</p>
+<p><strong>Ім'я:</strong> {{ booking.user_name }}</p>
+<p><strong>Email:</strong> {{ booking.user_email }}</p>
+<p><strong>Час початку:</strong> {{ booking.start_time|date:"d.m.Y H:i" }}</p>
+<p><strong>Час завершення:</strong> {{ booking.end_time|date:"d.m.Y H:i" }}</p>
+<p><strong>Статус:</strong> {{ booking.get_status_display }}</p>
+
+<p>На вашу email-адресу надіслано підтвердження.</p>
+
+<hr>
+<a href="{% url 'room_list' %}"><button>На головну</button></a>
+<a href="{% url 'my_bookings' %}"><button>Мої бронювання</button></a>
+{% endblock %}
