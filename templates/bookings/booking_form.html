@@ -1,0 +1,58 @@
+{% extends "bookings/base.html" %}
+
+{% block title %}Бронювання: {{ room.name }}{% endblock %}
+
+{% block content %}
+<h1>Бронювання кімнати: {{ room.name }}</h1>
+
+<p><strong>Категорія:</strong> {{ room.category }}</p>
+<p><strong>Вмістимість:</strong> {{ room.capacity }} осіб</p>
+<p><strong>Ціна:</strong> {{ room.price }} грн/год</p>
+{% if room.features %}
+    <p><strong>Особливості:</strong> {{ room.features }}</p>
+{% endif %}
+
+<hr>
+
+<h2>Заповніть форму бронювання</h2>
+
+{% if form.errors %}
+    <p><strong>Помилки у формі:</strong></p>
+    {% for field in form %}
+        {% if field.errors %}
+            <p>{{ field.label }}: {{ field.errors }}</p>
+        {% endif %}
+    {% endfor %}
+    {% if form.non_field_errors %}
+        <p>{{ form.non_field_errors }}</p>
+    {% endif %}
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <p>
+        <label>Кімната:</label><br>
+        {{ form.room }}
+    </p>
+    <p>
+        <label>Ваше ім'я:</label><br>
+        {{ form.user_name }}
+    </p>
+    <p>
+        <label>Email:</label><br>
+        {{ form.user_email }}
+    </p>
+    <p>
+        <label>Час початку:</label><br>
+        {{ form.start_time }}
+    </p>
+    <p>
+        <label>Час завершення:</label><br>
+        {{ form.end_time }}
+    </p>
+
+    <button type="submit">Підтвердити бронювання</button>
+    <a href="{% url 'room_list' %}"><button type="button">Скасувати</button></a>
+</form>
+{% endblock %}
