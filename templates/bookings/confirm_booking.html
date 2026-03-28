@@ -1,0 +1,30 @@
+{% extends "bookings/base.html" %}
+
+{% block title %}Підтвердження бронювання{% endblock %}
+
+{% block content %}
+
+{% if error %}
+    <h1>Помилка</h1>
+    <p>{{ error }}</p>
+
+{% elif already_confirmed %}
+    <h1>Вже підтверджено</h1>
+    <p>Це бронювання вже було підтверджено раніше.</p>
+
+{% else %}
+    <h1>Бронювання підтверджено!</h1>
+    <p>Дякуємо, <strong>{{ booking.user_name }}</strong>! Ваше бронювання успішно підтверджено.</p>
+{% endif %}
+
+<hr>
+<p><strong>Кімната:</strong> {{ booking.room.name }}</p>
+<p><strong>Час початку:</strong> {{ booking.start_time|date:"d.m.Y H:i" }}</p>
+<p><strong>Час завершення:</strong> {{ booking.end_time|date:"d.m.Y H:i" }}</p>
+<p><strong>Статус:</strong> {{ booking.get_status_display }}</p>
+
+<hr>
+<a href="{% url 'room_list' %}"><button>На головну</button></a>
+<a href="{% url 'my_bookings' %}"><button>Мої бронювання</button></a>
+
+{% endblock %}
