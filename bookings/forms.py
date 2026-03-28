@@ -1,5 +1,14 @@
 from django import forms
 from .models import Booking, Room
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+class RegisterForm(UserCreationForm):
+    email = forms.EmailField(required=True, label="Email")
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
 
 class BookingForm(forms.ModelForm):
     class Meta:
@@ -16,8 +25,10 @@ class BookingForm(forms.ModelForm):
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
 
-        if room and start_time and end_time:
-            # Логіка перевірки накладання дат:
+        if start_time and end_time and start_time >= end_time:
+            raise forms.ValidationError("Час завершення має бути пізніше часу початку.")
+
+        elif room and start_time and end_time:
             overlapping_bookings = Booking.objects.filter(
                 room=room,
                 status='confirmed',
