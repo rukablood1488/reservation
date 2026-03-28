@@ -28,7 +28,7 @@ class BookingForm(forms.ModelForm):
         if start_time and end_time and start_time >= end_time:
             raise forms.ValidationError("Час завершення має бути пізніше часу початку.")
 
-        elif room and start_time and end_time:
+        if room and start_time and end_time:
             overlapping_bookings = Booking.objects.filter(
                 room=room,
                 status='confirmed',
