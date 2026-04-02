@@ -1,15 +1,38 @@
 from django.contrib import admin
-from .models import RoomCategory, Room, Booking
+from .models import Location, RoomCategory, CategoryImage, Room, RoomImage, Booking
+
+
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ('country', 'city', 'address')
+    search_fields = ('country', 'city')
+
+
+class CategoryImageInline(admin.TabularInline):
+    model = CategoryImage
+    extra = 2
+    fields = ('image', 'caption', 'is_main')
+
 
 @admin.register(RoomCategory)
 class RoomCategoryAdmin(admin.ModelAdmin):
     list_display = ('name',)
+    inlines = [CategoryImageInline]
+
+
+class RoomImageInline(admin.TabularInline):
+    model = RoomImage
+    extra = 3
+    fields = ('image', 'caption', 'is_main')
+
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'capacity', 'price')
-    list_filter = ('category',)
-    search_fields = ('name',)
+    list_display = ('name', 'category', 'location', 'capacity', 'price')
+    list_filter = ('category', 'location__country', 'location__city')
+    search_fields = ('name', 'location__country', 'location__city')
+    inlines = [RoomImageInline]
+
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
