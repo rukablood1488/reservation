@@ -1,11 +1,8 @@
 {% extends "bookings/base.html" %}
-
 {% block title %}Список кімнат{% endblock %}
-
 {% block content %}
 <h1>Доступні кімнати</h1>
 
-<h3>Фільтр за категорією:</h3>
 <form method="get">
     <select name="category">
         <option value="">-- Всі категорії --</option>
@@ -18,22 +15,29 @@
     <button type="submit">Фільтрувати</button>
     <a href="{% url 'room_list' %}">Скинути</a>
 </form>
-
 <hr>
 
 {% if rooms %}
     {% for room in rooms %}
         <div>
+            {% with room.main_image as photo %}
+                {% if photo %}
+                    <img src="{{ photo.image.url }}" alt="{{ room.name }}" width="300"><br>
+                {% else %}
+                    <p>[Фото відсутнє]</p>
+                {% endif %}
+            {% endwith %}
             <h2>{{ room.name }}</h2>
             <p><strong>Категорія:</strong> {{ room.category }}</p>
+            {% if room.location %}
+                <p><strong>Локація:</strong> {{ room.location }}</p>
+            {% endif %}
             <p><strong>Вмістимість:</strong> {{ room.capacity }} осіб</p>
             <p><strong>Ціна:</strong> {{ room.price }} грн/год</p>
             {% if room.features %}
                 <p><strong>Особливості:</strong> {{ room.features }}</p>
             {% endif %}
-            <a href="{% url 'create_booking' room.id %}">
-                <button>Забронювати</button>
-            </a>
+            <a href="{% url 'create_booking' room.id %}"><button>Забронювати</button></a>
         </div>
         <hr>
     {% endfor %}
