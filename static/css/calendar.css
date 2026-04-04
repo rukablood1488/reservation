@@ -1,0 +1,73 @@
+.calendar-page { max-width: 1000px; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+
+.fc {
+  --fc-border-color: var(--border);
+  --fc-button-bg-color: var(--purple);
+  --fc-button-border-color: var(--purple);
+  --fc-button-hover-bg-color: var(--purple-light);
+  --fc-button-hover-border-color: var(--purple-light);
+  --fc-button-active-bg-color: #4f46e5;
+  --fc-today-bg-color: rgba(109,40,217,.08);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: var(--card);
+  --fc-list-event-hover-bg-color: rgba(109,40,217,.12);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.fc .fc-toolbar-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-weight: 300;
+  color: var(--text);
+}
+
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: .82rem;
+}
+
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  color: var(--purple-light);
+}
+
+.fc .fc-button {
+  border-radius: 8px;
+  font-size: .8rem; font-weight: 500;
+  letter-spacing: .04em;
+}
+
+.fc-theme-standard td, .fc-theme-standard th {
+  border-color: var(--border);
+}
+
+.fc .fc-scrollgrid {
+  border-color: var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.room-filter-bar {
+  display: flex; gap: .5rem; flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.room-filter-chip {
+  padding: .35rem .9rem; border-radius: 50px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--text-muted);
+  font-size: .8rem; cursor: pointer;
+  transition: all .2s;
+}
+.room-filter-chip:hover { border-color: var(--purple-light); color: var(--purple-light); }
+.room-filter-chip.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+
+.cal-legend {
+  display: flex; gap: 1.2rem; flex-wrap: wrap;
+  margin-top: 1.2rem; font-size: .8rem; color: var(--text-muted);
+}
+.legend-item { display: flex; align-items: center; gap: .4rem; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-confirmed { background: #34d399; }
+.dot-pending   { background: #fbbf24; }
+.dot-cancelled { background: #f87171; }

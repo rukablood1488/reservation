@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Voyara — {{ room.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/room_detail.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="detail-layout">
+
+  <div style="animation:fadeUp .5s both">
+    <a href="{% url 'room_list' %}" class="back-link">
+      <i class="bi bi-arrow-left"></i> До оселей
+    </a>
+
+    <div class="gallery-main" style="aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden">
+      {% with all_images=room.images.all %}
+        {% if all_images %}
+          <img id="mainImg" src="{{ all_images.0.image.url }}" alt="{{ room.name }}"
+               style="width:100%;height:100%;object-fit:cover;display:block" />
+        {% else %}
+          <div class="gallery-main" style="background:linear-gradient(135deg,#2d1b69,#0d0d1a);
+               display:flex;align-items:center;justify-content:center;font-size:5rem;
+               color:rgba(139,92,246,.3);aspect-ratio:16/9">
+            <i class="bi bi-building"></i>
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    {% with all_images=room.images.all %}
+      {% if all_images|length > 1 %}
+      <div class="gallery-thumbs" style="display:flex;gap:.6rem;margin-top:.6rem;overflow-x:auto">
+        {% for img in all_images %}
+        <img src="{{ img.image.url }}" alt="{{ room.name }}"
+             onclick="document.getElementById('mainImg').src=this.src;
+                      document.querySelectorAll('.gallery-thumbs img').forEach(i=>i.classList.remove('active'));
+                      this.classList.add('active');"
+             style="width:80px;height:56px;object-fit:cover;border-radius:8px;cursor:pointer;
+                    border:2px solid {% if forloop.first %}var(--purple-light){% else %}transparent{% endif %};
+                    transition:border-color .2s;flex-shrink:0"
+             class="{% if forloop.first %}active{% endif %}" />
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="detail-info" style="margin-top:2rem">
+      <div class="detail-category">
+        {% if room.category %}{{ room.category.name }}{% endif %}
+      </div>
+      <h1 class="detail-title">{{ room.name }}</h1>
+
+      <div class="detail-meta">
+        {% if room.location %}
+        <span class="detail-meta-item">
+          <i class="bi bi-geo-alt"></i>
+          {{ room.location.city }}, {{ room.location.country }}
+          {% if room.location.address %} — {{ room.location.address }}{% endif %}
+        </span>
+        {% endif %}
+        <span class="detail-meta-item">
+          <i class="bi bi-people"></i> до {{ room.capacity }} осіб
+        </span>
+        <span class="detail-meta-item">
+          <i class="bi bi-tag"></i> {{ room.price }} ₴ / ніч
+        </span>
+      </div>
+
+      {% if room.category.description %}
+      <div class="detail-description">{{ room.category.description }}</div>
+      {% endif %}
+
+      {% if room.features %}
+      <div class="features-title">Особливості</div>
+      <div class="features-list">
+        {% for feat in room.features.split %}
+        <span class="feature-pill">{{ feat }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="detail-sidebar" style="animation:fadeUp .5s .15s both">
+    <div class="booking-sticky-card">
+      <div class="price-big"><span>{{ room.price }}</span> ₴</div>
+      <div class="price-per">за ніч</div>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'create_booking' room.id %}" class="btn-book-full">
+          <i class="bi bi-calendar-check"></i> Забронювати
+        </a>
+      {% else %}
+        <a href="{% url 'login' %}?next={% url 'create_booking' room.id %}" class="btn-book-full">
+          <i class="bi bi-lock"></i> Увійти для бронювання
+        </a>
+      {% endif %}
+
+      <a href="{% url 'calendar' %}?room={{ room.id }}" class="btn-calendar">
+        <i class="bi bi-calendar3"></i> Переглянути зайнятість
+      </a>
+
+      <div class="detail-divider"></div>
+
+      <div class="detail-card-meta">
+        {% if room.location %}
+        <div class="detail-card-meta-row">
+          <span><i class="bi bi-geo-alt"></i> Місто</span>
+          <span>{{ room.location.city }}</span>
+        </div>
+        {% endif %}
+        <div class="detail-card-meta-row">
+          <span><i class="bi bi-people"></i> Місткість</span>
+          <span>{{ room.capacity }} осіб</span>
+        </div>
+        {% if room.category %}
+        <div class="detail-card-meta-row">
+          <span><i class="bi bi-tag"></i> Тип</span>
+          <span>{{ room.category.name }}</span>
+        </div>
+        {% endif %}
+        <div class="detail-card-meta-row">
+          <span><i class="bi bi-shield-check"></i> Підтвердження</span>
+          <span>Email</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,20 +1,53 @@
-{% extends "bookings/base.html" %}
-
-{% block title %}Бронювання прийнято{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Voyara — Бронювання надіслано{% endblock %}
 
 {% block content %}
-<h1>Бронювання успішно створено!</h1>
+<div style="min-height:70vh;display:flex;align-items:center;justify-content:center;padding:3rem 1.5rem">
+  <div style="max-width:520px;width:100%;text-align:center;animation:fadeUp .6s both">
 
-<p><strong>Кімната:</strong> {{ booking.room.name }}</p>
-<p><strong>Ім'я:</strong> {{ booking.user_name }}</p>
-<p><strong>Email:</strong> {{ booking.user_email }}</p>
-<p><strong>Час початку:</strong> {{ booking.start_time|date:"d.m.Y H:i" }}</p>
-<p><strong>Час завершення:</strong> {{ booking.end_time|date:"d.m.Y H:i" }}</p>
-<p><strong>Статус:</strong> {{ booking.get_status_display }}</p>
+    <div style="width:90px;height:90px;margin:0 auto 2rem;border-radius:50%;
+                background:rgba(52,211,153,.1);border:2px solid rgba(52,211,153,.3);
+                display:flex;align-items:center;justify-content:center;
+                animation:pulse 2s ease-in-out infinite">
+      <i class="bi bi-envelope-check" style="font-size:2.5rem;color:#34d399"></i>
+    </div>
 
-<p>На вашу email-адресу надіслано підтвердження.</p>
+    <p class="section-eyebrow" style="justify-content:center;margin-bottom:.8rem">Майже готово!</p>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;color:var(--text);margin-bottom:1rem">Запит надіслано</h1>
+    <p style="color:var(--text-muted);font-size:.95rem;line-height:1.7;margin-bottom:2rem">
+      Ми надіслали лист на <strong style="color:var(--purple-light)">{{ booking.user_email }}</strong>.
+      Перейдіть за посиланням у листі, щоб підтвердити бронювання.
+    </p>
 
-<hr>
-<a href="{% url 'room_list' %}"><button>На головну</button></a>
-<a href="{% url 'my_bookings' %}"><button>Мої бронювання</button></a>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem;text-align:left">
+      <div style="display:flex;flex-direction:column;gap:.7rem;font-size:.87rem;color:var(--text-muted)">
+        <div style="display:flex;justify-content:space-between">
+          <span><i class="bi bi-building" style="color:var(--purple-light)"></i> Оселя</span>
+          <span style="color:var(--text)">{{ booking.room.name }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span><i class="bi bi-calendar-event" style="color:var(--purple-light)"></i> Заїзд</span>
+          <span style="color:var(--text)">{{ booking.start_time|date:"d.m.Y H:i" }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span><i class="bi bi-calendar-x" style="color:var(--purple-light)"></i> Виїзд</span>
+          <span style="color:var(--text)">{{ booking.end_time|date:"d.m.Y H:i" }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span><i class="bi bi-hourglass-split" style="color:var(--pink)"></i> Статус</span>
+          <span class="badge-status badge-pending">Очікує підтвердження</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <a href="{% url 'room_list' %}" class="btn-outline-purple"><i class="bi bi-arrow-left"></i> До оселей</a>
+      <a href="{% url 'my_bookings' %}" class="btn-pink"><i class="bi bi-calendar3"></i> Мої бронювання</a>
+    </div>
+  </div>
+</div>
+<style>
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.2)}50%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}
+</style>
 {% endblock %}

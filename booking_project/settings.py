@@ -140,3 +140,5 @@ DEFAULT_FROM_EMAIL = 'Booking System <maksmisko93@gmail.com>'
 # --- Медіа ---
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATICFILES_DIRS = [BASE_DIR / 'static']

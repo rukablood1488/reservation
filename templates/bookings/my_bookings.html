@@ -1,26 +1,96 @@
-{% extends "bookings/base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Voyara — Мої бронювання{% endblock %}
 
-{% block title %}Мої бронювання{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/my_bookings.css' %}" />
+{% endblock %}
 
 {% block content %}
-<h1>Мої бронювання</h1>
-<p>Бронювання прив'язані до email: <strong>{{ user.email }}</strong></p>
+<div class="bookings-page">
+  <div style="margin-bottom:2.5rem;animation:fadeUp .4s both">
+    <p class="section-eyebrow" style="margin-bottom:.6rem">Профіль</p>
+    <h1 class="section-title">Мої <em>бронювання</em></h1>
+  </div>
 
-<hr>
+  {% if bookings %}
 
-{% if bookings %}
+  <div class="stats-strip" style="animation:fadeUp .4s .1s both">
+    <div class="stat-card">
+      <div class="stat-value">{{ total }}</div>
+      <div class="stat-label">Всього</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:#34d399">{{ confirmed }}</div>
+      <div class="stat-label">Підтверджено</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:#fbbf24">{{ pending }}</div>
+      <div class="stat-label">Очікують</div>
+    </div>
+  </div>
+
+  <div class="filter-tabs" id="filterTabs" style="animation:fadeUp .4s .2s both">
+    <button class="filter-chip active" data-filter="all">Всі</button>
+    <button class="filter-chip" data-filter="pending">Очікують</button>
+    <button class="filter-chip" data-filter="confirmed">Підтверджені</button>
+    <button class="filter-chip" data-filter="cancelled">Скасовані</button>
+  </div>
+
+  <div id="bookingsList">
     {% for booking in bookings %}
-        <div>
-            <h3>{{ booking.room.name }}</h3>
-            <p><strong>Дата:</strong> {{ booking.start_time|date:"d.m.Y H:i" }} — {{ booking.end_time|date:"d.m.Y H:i" }}</p>
-            <p><strong>Статус:</strong> {{ booking.get_status_display }}</p>
-            <p><strong>Створено:</strong> {{ booking.created_at|date:"d.m.Y H:i" }}</p>
+    <div class="booking-item" data-status="{{ booking.status }}"
+         style="animation-delay:{{ forloop.counter0 }}00ms">
+      <div class="booking-icon">
+        <i class="bi bi-building"></i>
+      </div>
+      <div class="booking-info">
+        <div class="booking-room">{{ booking.room.name }}</div>
+        <div class="booking-dates">
+          <i class="bi bi-calendar-event"></i>
+          {{ booking.start_time|date:"d.m.Y H:i" }}
+          &nbsp;→&nbsp;
+          <i class="bi bi-calendar-x"></i>
+          {{ booking.end_time|date:"d.m.Y H:i" }}
         </div>
-        <hr>
+        <div style="font-size:.78rem;color:var(--text-muted);margin-top:.25rem">
+          <i class="bi bi-clock"></i> Створено: {{ booking.created_at|date:"d.m.Y H:i" }}
+        </div>
+      </div>
+      <div class="booking-right">
+        <div class="badge-status
+          {% if booking.status == 'pending' %}badge-pending
+          {% elif booking.status == 'confirmed' %}badge-confirmed
+          {% else %}badge-cancelled{% endif %}"
+          style="margin-bottom:.6rem">
+          {% if booking.status == 'pending' %}<i class="bi bi-hourglass-split"></i>
+          {% elif booking.status == 'confirmed' %}<i class="bi bi-check-circle"></i>
+          {% else %}<i class="bi bi-x-circle"></i>{% endif %}
+          {{ booking.get_status_display }}
+        </div>
+        <div style="font-size:.82rem;color:var(--text-muted)">
+          {{ booking.room.price }} ₴/ніч
+        </div>
+      </div>
+    </div>
     {% endfor %}
-{% else %}
-    <p>У вас ще немає бронювань.</p>
-{% endif %}
+  </div>
 
-<a href="{% url 'room_list' %}"><button>Забронювати кімнату</button></a>
+  {% else %}
+  <div class="empty-bookings" style="animation:fadeUp .5s both">
+    <i class="bi bi-calendar-x"></i>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--text);margin-bottom:.5rem">
+      Бронювань ще немає
+    </p>
+    <p style="margin-bottom:1.5rem">Знайдіть свою ідеальну оселю вже зараз</p>
+    <a href="{% url 'room_list' %}" class="btn-pink">
+      <i class="bi bi-search"></i> Переглянути оселі
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/my_bookings.js' %}"></script>
 {% endblock %}

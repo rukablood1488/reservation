@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Voyara — Додати оселю{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div style="max-width:750px;margin:0 auto;padding:4rem 1.5rem 6rem">
+
+  <div style="margin-bottom:2rem;animation:fadeUp .4s both">
+    <a href="{% url 'room_list' %}" style="display:inline-flex;align-items:center;gap:.4rem;
+       color:var(--text-muted);font-size:.85rem;text-decoration:none;margin-bottom:1.2rem">
+      <i class="bi bi-arrow-left"></i> До оселей
+    </a>
+    <p class="section-eyebrow" style="margin-bottom:.6rem">Моя оселя</p>
+    <h1 class="section-title">Додати <em>пропозицію</em></h1>
+    <p style="color:var(--text-muted);font-size:.9rem;margin-top:.5rem">
+      Опублікуйте свою оселю — і гості зможуть її забронювати.
+    </p>
+  </div>
+
+  <div class="form-card" style="animation:fadeUp .4s .1s both">
+
+    {% if form.non_field_errors %}
+    <div class="alert-form-error">
+      <i class="bi bi-exclamation-triangle" style="flex-shrink:0"></i>
+      <div>{% for error in form.non_field_errors %}<p style="margin:0">{{ error }}</p>{% endfor %}</div>
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="field-group">
+        <label class="field-label" for="{{ form.name.id_for_label }}">
+          <i class="bi bi-building" style="color:var(--purple-light)"></i> Назва оселі
+        </label>
+        <input type="text" class="field-input {% if form.name.errors %}is-invalid{% endif %}"
+          id="{{ form.name.id_for_label }}" name="{{ form.name.html_name }}"
+          value="{{ form.name.value|default:'' }}" placeholder="Наприклад: Затишна студія в центрі" />
+        {% if form.name.errors %}<div class="field-error">{{ form.name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="form-row-2">
+        <div class="field-group">
+          <label class="field-label" for="{{ form.category.id_for_label }}">
+            <i class="bi bi-tag" style="color:var(--purple-light)"></i> Категорія
+          </label>
+          <select class="field-input {% if form.category.errors %}is-invalid{% endif %}"
+            id="{{ form.category.id_for_label }}" name="{{ form.category.html_name }}">
+            <option value="">— Оберіть категорію —</option>
+            {% for val, label in form.category.field.choices %}
+              {% if val %}
+              <option value="{{ val }}" {% if form.category.value == val|stringformat:'s' %}selected{% endif %}>
+                {{ label }}
+              </option>
+              {% endif %}
+            {% endfor %}
+          </select>
+          {% if form.category.errors %}<div class="field-error">{{ form.category.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.capacity.id_for_label }}">
+            <i class="bi bi-people" style="color:var(--purple-light)"></i> Місткість (осіб)
+          </label>
+          <input type="number" min="1" class="field-input {% if form.capacity.errors %}is-invalid{% endif %}"
+            id="{{ form.capacity.id_for_label }}" name="{{ form.capacity.html_name }}"
+            value="{{ form.capacity.value|default:'' }}" placeholder="2" />
+          {% if form.capacity.errors %}<div class="field-error">{{ form.capacity.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="field-group">
+          <label class="field-label" for="{{ form.price.id_for_label }}">
+            <i class="bi bi-currency-dollar" style="color:var(--purple-light)"></i> Ціна за ніч (₴)
+          </label>
+          <input type="number" min="0" step="0.01" class="field-input {% if form.price.errors %}is-invalid{% endif %}"
+            id="{{ form.price.id_for_label }}" name="{{ form.price.html_name }}"
+            value="{{ form.price.value|default:'' }}" placeholder="500" />
+          {% if form.price.errors %}<div class="field-error">{{ form.price.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.city.id_for_label }}">
+            <i class="bi bi-geo-alt" style="color:var(--purple-light)"></i> Місто
+          </label>
+          <input type="text" class="field-input {% if form.city.errors %}is-invalid{% endif %}"
+            id="{{ form.city.id_for_label }}" name="{{ form.city.html_name }}"
+            value="{{ form.city.value|default:'' }}" placeholder="Київ" />
+          {% if form.city.errors %}<div class="field-error">{{ form.city.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="field-group">
+          <label class="field-label" for="{{ form.country.id_for_label }}">
+            <i class="bi bi-globe" style="color:var(--purple-light)"></i> Країна
+          </label>
+          <input type="text" class="field-input {% if form.country.errors %}is-invalid{% endif %}"
+            id="{{ form.country.id_for_label }}" name="{{ form.country.html_name }}"
+            value="{{ form.country.value|default:'Україна' }}" placeholder="Україна" />
+          {% if form.country.errors %}<div class="field-error">{{ form.country.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.address.id_for_label }}">
+            <i class="bi bi-map" style="color:var(--purple-light)"></i> Адреса
+          </label>
+          <input type="text" class="field-input"
+            id="{{ form.address.id_for_label }}" name="{{ form.address.html_name }}"
+            value="{{ form.address.value|default:'' }}" placeholder="вул. Хрещатик, 1" />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="{{ form.features.id_for_label }}">
+          <i class="bi bi-stars" style="color:var(--purple-light)"></i> Особливості
+          <span style="color:var(--text-muted);font-weight:300;text-transform:none;letter-spacing:0">(через пробіл)</span>
+        </label>
+        <input type="text" class="field-input"
+          id="{{ form.features.id_for_label }}" name="{{ form.features.html_name }}"
+          value="{{ form.features.value|default:'' }}"
+          placeholder="WiFi Парковка Басейн Балкон" />
+      </div>
+
+      <button type="submit" class="submit-btn submit-btn-pink">
+        <i class="bi bi-plus-circle me-2"></i> Опублікувати оселю
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

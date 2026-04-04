@@ -1,27 +1,67 @@
-{% extends "bookings/base.html" %}
-
-{% block title %}Вхід{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Voyara — Вхід{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+{% endblock %}
 
 {% block content %}
-<h1>Вхід в систему</h1>
+<div class="auth-page">
+  <div class="auth-orb" style="width:400px;height:400px;background:radial-gradient(circle,rgba(109,40,217,.18) 0%,transparent 70%);top:-100px;right:-100px"></div>
+  <div class="auth-orb" style="width:300px;height:300px;background:radial-gradient(circle,rgba(236,72,153,.12) 0%,transparent 70%);bottom:-80px;left:-60px"></div>
 
-{% if error %}
-    <p><strong>{{ error }}</strong></p>
-{% endif %}
+  <div class="auth-box">
+    <div style="text-align:center;margin-bottom:2rem">
+      <a href="{% url 'room_list' %}" class="auth-logo">Vo<span>ya</span>ra</a>
+      <p class="section-eyebrow" style="justify-content:center;margin:.8rem 0 .4rem">Ласкаво просимо</p>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--text)">Увійдіть до акаунту</h1>
+    </div>
 
-<form method="post">
-    {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}">
-    <p>
-        <label>Логін:</label><br>
-        <input type="text" name="username">
+    <div class="auth-inner">
+      {% if error %}
+      <div class="alert-voyara alert-error" style="margin-bottom:1.4rem">
+        <i class="bi bi-exclamation-circle"></i> {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+
+        <div class="field-group">
+          <label class="field-label"><i class="bi bi-person" style="color:var(--purple-light)"></i> Логін</label>
+          <input type="text" name="username" autofocus class="field-input" placeholder="ваш_логін" />
+        </div>
+
+        <div class="field-group" style="margin-bottom:1.5rem">
+          <label class="field-label"><i class="bi bi-lock" style="color:var(--purple-light)"></i> Пароль</label>
+          <div style="position:relative">
+            <input type="password" name="password" id="passwordInput" class="field-input" style="padding-right:2.8rem" placeholder="••••••••" />
+            <button type="button" onclick="togglePass()" style="position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer">
+              <i class="bi bi-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <i class="bi bi-box-arrow-in-right me-2"></i> Увійти
+        </button>
+      </form>
+    </div>
+
+    <p style="text-align:center;margin-top:1.2rem;font-size:.85rem;color:var(--text-muted)">
+      Немає акаунту?
+      <a href="{% url 'register' %}" style="color:var(--pink);text-decoration:none;font-weight:500">Зареєструватися</a>
     </p>
-    <p>
-        <label>Пароль:</label><br>
-        <input type="password" name="password">
-    </p>
-    <button type="submit">Увійти</button>
-</form>
+  </div>
+</div>
 
-<p>Немає акаунту? <a href="{% url 'register' %}">Зареєструйтесь</a></p>
+<script>
+function togglePass() {
+  const inp = document.getElementById('passwordInput');
+  const icon = document.getElementById('eyeIcon');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  icon.className = inp.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+}
+</script>
 {% endblock %}

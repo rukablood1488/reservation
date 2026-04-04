@@ -1,40 +1,67 @@
-{% extends "bookings/base.html" %}
-
-{% block title %}Реєстрація{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Voyara — Реєстрація{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+{% endblock %}
 
 {% block content %}
-<h1>Реєстрація</h1>
+<div class="auth-page">
+  <div class="auth-orb" style="width:450px;height:450px;background:radial-gradient(circle,rgba(236,72,153,.15) 0%,transparent 70%);top:-80px;left:-80px"></div>
+  <div class="auth-orb" style="width:350px;height:350px;background:radial-gradient(circle,rgba(109,40,217,.2) 0%,transparent 70%);bottom:-60px;right:-60px"></div>
 
-{% if form.errors %}
-    <p><strong>Виправте помилки нижче:</strong></p>
-{% endif %}
+  <div class="auth-box" style="max-width:460px">
+    <div style="text-align:center;margin-bottom:2rem">
+      <a href="{% url 'room_list' %}" class="auth-logo">Vo<span>ya</span>ra</a>
+      <p class="section-eyebrow" style="justify-content:center;margin:.8rem 0 .4rem">Новий акаунт</p>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--text)">Приєднуйтесь до нас</h1>
+    </div>
 
-<form method="post">
-    {% csrf_token %}
+    <div class="auth-inner">
+      {% if form.errors %}
+      <div class="alert-voyara alert-error" style="margin-bottom:1.4rem">
+        <i class="bi bi-exclamation-circle" style="flex-shrink:0"></i>
+        <div>Будь ласка, виправте помилки нижче.</div>
+      </div>
+      {% endif %}
 
-    <p>
-        <label>Логін:</label><br>
-        {{ form.username }}
-        {% if form.username.errors %}<br><small>{{ form.username.errors }}</small>{% endif %}
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="field-group">
+          <label class="field-label">
+            {% if field.name == 'username' %}<i class="bi bi-person" style="color:var(--purple-light)"></i>
+            {% elif field.name == 'email' %}<i class="bi bi-envelope" style="color:var(--purple-light)"></i>
+            {% elif 'password' in field.name %}<i class="bi bi-lock" style="color:var(--purple-light)"></i>
+            {% endif %}
+            {{ field.label }}
+          </label>
+          <input
+            type="{% if 'password' in field.name %}password{% else %}{{ field.field.widget.input_type }}{% endif %}"
+            name="{{ field.html_name }}"
+            id="{{ field.id_for_label }}"
+            {% if field.name != 'password1' and field.name != 'password2' %}value="{{ field.value|default:'' }}"{% endif %}
+            class="field-input {% if field.errors %}is-invalid{% endif %}"
+          />
+          {% if field.errors %}
+          <div class="field-error">{{ field.errors.0 }}</div>
+          {% endif %}
+          {% if field.help_text %}
+          <div style="font-size:.76rem;color:var(--text-muted);margin-top:.3rem;line-height:1.4">{{ field.help_text }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="submit-btn submit-btn-pink" style="margin-top:.3rem">
+          <i class="bi bi-stars me-2"></i> Створити акаунт
+        </button>
+      </form>
+    </div>
+
+    <p style="text-align:center;margin-top:1.2rem;font-size:.85rem;color:var(--text-muted)">
+      Вже маєте акаунт?
+      <a href="{% url 'login' %}" style="color:var(--purple-light);text-decoration:none;font-weight:500">Увійти</a>
     </p>
-    <p>
-        <label>Email:</label><br>
-        {{ form.email }}
-        {% if form.email.errors %}<br><small>{{ form.email.errors }}</small>{% endif %}
-    </p>
-    <p>
-        <label>Пароль:</label><br>
-        {{ form.password1 }}
-        {% if form.password1.errors %}<br><small>{{ form.password1.errors }}</small>{% endif %}
-    </p>
-    <p>
-        <label>Підтвердження пароля:</label><br>
-        {{ form.password2 }}
-        {% if form.password2.errors %}<br><small>{{ form.password2.errors }}</small>{% endif %}
-    </p>
-
-    <button type="submit">Зареєструватися</button>
-</form>
-
-<p>Вже маєте акаунт? <a href="{% url 'login' %}">Увійдіть</a></p>
+  </div>
+</div>
 {% endblock %}

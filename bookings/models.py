@@ -1,17 +1,18 @@
 import uuid
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 
 class Location(models.Model):
     country = models.CharField(max_length=100, verbose_name="Країна")
-    city = models.CharField(max_length=100, verbose_name="Місто")
+    city    = models.CharField(max_length=100, verbose_name="Місто")
     address = models.CharField(max_length=255, blank=True, verbose_name="Адреса")
 
     class Meta:
-        verbose_name = "Локація"
+        verbose_name        = "Локація"
         verbose_name_plural = "Локації"
-        unique_together = ('country', 'city', 'address')
+        unique_together     = ('country', 'city', 'address')
 
     def __str__(self):
         parts = [self.city, self.country]
@@ -21,11 +22,11 @@ class Location(models.Model):
 
 
 class RoomCategory(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Назва категорії")
+    name        = models.CharField(max_length=100, verbose_name="Назва категорії")
     description = models.TextField(blank=True, verbose_name="Опис")
 
     class Meta:
-        verbose_name = "Категорія кімнати/місця"
+        verbose_name        = "Категорія кімнати/місця"
         verbose_name_plural = "Категорії кімнат/місць"
 
     def __str__(self):
@@ -36,19 +37,17 @@ class RoomCategory(models.Model):
 
 
 class CategoryImage(models.Model):
-    category = models.ForeignKey(
-        RoomCategory, on_delete=models.CASCADE,
-        related_name='images', verbose_name="Категорія"
-    )
-    image = models.ImageField(upload_to='categories/', verbose_name="Фото")
-    caption = models.CharField(max_length=200, blank=True, verbose_name="Підпис")
-    is_main = models.BooleanField(default=False, verbose_name="Головне фото")
+    category    = models.ForeignKey(RoomCategory, on_delete=models.CASCADE,
+                                    related_name='images', verbose_name="Категорія")
+    image       = models.ImageField(upload_to='categories/', verbose_name="Фото")
+    caption     = models.CharField(max_length=200, blank=True, verbose_name="Підпис")
+    is_main     = models.BooleanField(default=False, verbose_name="Головне фото")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Фото категорії"
+        verbose_name        = "Фото категорії"
         verbose_name_plural = "Фото категорій"
-        ordering = ['-is_main', 'uploaded_at']
+        ordering            = ['-is_main', 'uploaded_at']
 
     def __str__(self):
         return f"Фото для {self.category.name} {'(головне)' if self.is_main else ''}"
@@ -62,45 +61,43 @@ class CategoryImage(models.Model):
 
 
 class Room(models.Model):
-    category = models.ForeignKey(
-        RoomCategory, on_delete=models.SET_NULL, null=True,
-        related_name='rooms', verbose_name="Категорія"
-    )
-    location = models.ForeignKey(
-        Location, on_delete=models.SET_NULL, null=True, blank=True,
-        related_name='rooms', verbose_name="Локація"
-    )
-    name = models.CharField(max_length=100, verbose_name="Назва кімнати/місця")
+    owner    = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                 related_name='listings', verbose_name="Власник")
+    category = models.ForeignKey(RoomCategory, on_delete=models.SET_NULL, null=True,
+                                 related_name='rooms', verbose_name="Категорія")
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True,
+                                 related_name='rooms', verbose_name="Локація")
+    name     = models.CharField(max_length=100, verbose_name="Назва кімнати/місця")
     capacity = models.PositiveIntegerField(verbose_name="Вмістимість")
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Ціна")
-    features = models.TextField(blank=True, verbose_name="Особливості (через кому)")
+    price    = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Ціна")
+    features = models.TextField(blank=True, verbose_name="Особливості (через пробіл)")
+    is_active = models.BooleanField(default=True, verbose_name="Активна")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Додано", null=True)
 
     class Meta:
-        verbose_name = "Кімната"
+        verbose_name        = "Кімната"
         verbose_name_plural = "Кімнати"
 
     def __str__(self):
-        category_name = self.category.name if self.category else "Без категорії"
-        return f"{self.name} ({category_name})"
+        cat = self.category.name if self.category else "Без категорії"
+        return f"{self.name} ({cat})"
 
     def main_image(self):
         return self.images.filter(is_main=True).first() or self.images.first()
 
 
 class RoomImage(models.Model):
-    room = models.ForeignKey(
-        Room, on_delete=models.CASCADE,
-        related_name='images', verbose_name="Кімната"
-    )
-    image = models.ImageField(upload_to='rooms/', verbose_name="Фото")
-    caption = models.CharField(max_length=200, blank=True, verbose_name="Підпис")
-    is_main = models.BooleanField(default=False, verbose_name="Головне фото")
+    room        = models.ForeignKey(Room, on_delete=models.CASCADE,
+                                    related_name='images', verbose_name="Кімната")
+    image       = models.ImageField(upload_to='rooms/', verbose_name="Фото")
+    caption     = models.CharField(max_length=200, blank=True, verbose_name="Підпис")
+    is_main     = models.BooleanField(default=False, verbose_name="Головне фото")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Фото кімнати"
+        verbose_name        = "Фото кімнати"
         verbose_name_plural = "Фото кімнат"
-        ordering = ['-is_main', 'uploaded_at']
+        ordering            = ['-is_main', 'uploaded_at']
 
     def __str__(self):
         return f"Фото для {self.room.name} {'(головне)' if self.is_main else ''}"
@@ -115,22 +112,26 @@ class RoomImage(models.Model):
 
 class Booking(models.Model):
     STATUS_CHOICES = (
-        ('pending', 'Очікує підтвердження'),
+        ('pending',   'Очікує підтвердження'),
         ('confirmed', 'Підтверджено'),
         ('cancelled', 'Скасовано'),
     )
 
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='bookings', verbose_name="Кімната")
-    user_name = models.CharField(max_length=150, verbose_name="Ім'я користувача")
-    user_email = models.EmailField(verbose_name="Email")
-    start_time = models.DateTimeField(verbose_name="Час початку")
-    end_time = models.DateTimeField(verbose_name="Час завершення")
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Статус")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Створено")
+    room               = models.ForeignKey(Room, on_delete=models.CASCADE,
+                                           related_name='bookings', verbose_name="Кімната")
+    user               = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                           related_name='bookings', verbose_name="Користувач")
+    user_name          = models.CharField(max_length=150, verbose_name="Ім'я")
+    user_email         = models.EmailField(verbose_name="Email")
+    start_time         = models.DateTimeField(verbose_name="Час початку")
+    end_time           = models.DateTimeField(verbose_name="Час завершення")
+    status             = models.CharField(max_length=20, choices=STATUS_CHOICES,
+                                          default='pending', verbose_name="Статус")
+    created_at         = models.DateTimeField(auto_now_add=True, verbose_name="Створено")
     confirmation_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     class Meta:
-        verbose_name = "Бронювання"
+        verbose_name        = "Бронювання"
         verbose_name_plural = "Бронювання"
 
     def clean(self):
@@ -138,4 +139,4 @@ class Booking(models.Model):
             raise ValidationError("Час завершення має бути пізніше часу початку.")
 
     def __str__(self):
-        return f"Бронювання: {self.user_name} -> {self.room.name} ({self.start_time.strftime('%d.%m.%Y')})"
+        return f"Бронювання: {self.user_name} → {self.room.name} ({self.start_time.strftime('%d.%m.%Y')})"

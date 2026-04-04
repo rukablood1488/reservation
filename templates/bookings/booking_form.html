@@ -1,43 +1,133 @@
-{% extends "bookings/base.html" %}
-{% block title %}Бронювання: {{ room.name }}{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Voyara — Бронювання {{ room.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+{% endblock %}
+
 {% block content %}
-<h1>Бронювання: {{ room.name }}</h1>
+<div class="booking-layout">
 
-{% with room.main_image as photo %}
-    {% if photo %}<img src="{{ photo.image.url }}" alt="{{ room.name }}" width="400"><br>{% endif %}
-{% endwith %}
+  <div class="form-card" style="animation:fadeUp .5s both">
+    <p class="section-eyebrow" style="margin-bottom:.6rem">Нове бронювання</p>
+    <h1>{{ room.name }}</h1>
+    <p class="sub">Заповніть форму нижче для підтвердження бронювання</p>
 
-<p><strong>Категорія:</strong> {{ room.category }}</p>
-{% if room.location %}<p><strong>Локація:</strong> {{ room.location }}</p>{% endif %}
-<p><strong>Вмістимість:</strong> {{ room.capacity }} осіб</p>
-<p><strong>Ціна:</strong> {{ room.price }} грн/год</p>
-{% if room.features %}<p><strong>Особливості:</strong> {{ room.features }}</p>{% endif %}
+    {% if form.non_field_errors %}
+    <div class="alert-form-error">
+      <i class="bi bi-exclamation-triangle" style="flex-shrink:0;margin-top:.1rem"></i>
+      <div>{% for error in form.non_field_errors %}<p style="margin:0">{{ error }}</p>{% endfor %}</div>
+    </div>
+    {% endif %}
 
-{% if room.images.count > 1 %}
-    <p><strong>Галерея:</strong></p>
-    {% for img in room.images.all %}
-        <img src="{{ img.image.url }}" alt="{{ img.caption|default:room.name }}" width="150">
-    {% endfor %}
-{% endif %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form.room.as_hidden }}
 
-<hr>
-<h2>Форма бронювання</h2>
+      <div class="form-row-2">
+        <div class="field-group">
+          <label class="field-label" for="{{ form.user_name.id_for_label }}">
+            <i class="bi bi-person" style="color:var(--purple-light)"></i> Ім'я
+          </label>
+          <input type="text"
+            class="field-input {% if form.user_name.errors %}is-invalid{% endif %}"
+            id="{{ form.user_name.id_for_label }}" name="{{ form.user_name.html_name }}"
+            value="{{ form.user_name.value|default:'' }}" placeholder="Ваше ім'я" />
+          {% if form.user_name.errors %}<div class="field-error">{{ form.user_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="{{ form.user_email.id_for_label }}">
+            <i class="bi bi-envelope" style="color:var(--purple-light)"></i> Email
+          </label>
+          <input type="email"
+            class="field-input {% if form.user_email.errors %}is-invalid{% endif %}"
+            id="{{ form.user_email.id_for_label }}" name="{{ form.user_email.html_name }}"
+            value="{{ form.user_email.value|default:'' }}" placeholder="your@email.com" />
+          {% if form.user_email.errors %}<div class="field-error">{{ form.user_email.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
 
-{% if form.errors %}
-    {% for field in form %}
-        {% if field.errors %}<p>{{ field.label }}: {{ field.errors }}</p>{% endif %}
-    {% endfor %}
-    {% if form.non_field_errors %}<p>{{ form.non_field_errors }}</p>{% endif %}
-{% endif %}
+      <div class="form-row-2">
+        <div class="field-group">
+          <label class="field-label" for="{{ form.start_time.id_for_label }}">
+            <i class="bi bi-calendar-event" style="color:var(--purple-light)"></i> Дата заїзду
+          </label>
+          <input type="datetime-local"
+            class="field-input {% if form.start_time.errors %}is-invalid{% endif %}"
+            id="{{ form.start_time.id_for_label }}" name="{{ form.start_time.html_name }}"
+            value="{{ form.start_time.value|default:'' }}" />
+          {% if form.start_time.errors %}<div class="field-error">{{ form.start_time.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="{{ form.end_time.id_for_label }}">
+            <i class="bi bi-calendar-x" style="color:var(--purple-light)"></i> Дата виїзду
+          </label>
+          <input type="datetime-local"
+            class="field-input {% if form.end_time.errors %}is-invalid{% endif %}"
+            id="{{ form.end_time.id_for_label }}" name="{{ form.end_time.html_name }}"
+            value="{{ form.end_time.value|default:'' }}" />
+          {% if form.end_time.errors %}<div class="field-error">{{ form.end_time.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
 
-<form method="post">
-    {% csrf_token %}
-    <p><label>Кімната:</label><br>{{ form.room }}</p>
-    <p><label>Ваше ім'я:</label><br>{{ form.user_name }}</p>
-    <p><label>Email:</label><br>{{ form.user_email }}</p>
-    <p><label>Час початку:</label><br>{{ form.start_time }}</p>
-    <p><label>Час завершення:</label><br>{{ form.end_time }}</p>
-    <button type="submit">Підтвердити бронювання</button>
-    <a href="{% url 'room_list' %}"><button type="button">Скасувати</button></a>
-</form>
+      <div id="priceEstimate" class="price-estimate-box" style="display:none">
+        <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text-muted)">
+          <span>Приблизна вартість</span>
+          <span id="estimateValue" style="color:var(--purple-light);font-weight:500;font-size:1rem"></span>
+        </div>
+        <div id="estimateDays" style="font-size:.77rem;color:var(--text-muted);margin-top:.2rem"></div>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <i class="bi bi-calendar-check me-2"></i> Підтвердити бронювання
+      </button>
+    </form>
+
+    <p style="text-align:center;font-size:.78rem;color:var(--text-muted);margin-top:1.2rem">
+      <i class="bi bi-shield-check" style="color:var(--pink)"></i>
+      Посилання для підтвердження надійде на вашу електронну пошту
+    </p>
+  </div>
+
+
+  <div class="booking-sidebar" style="animation:fadeUp .5s .15s both">
+    <div class="room-preview-card">
+      {% with img=room.main_image %}
+        {% if img %}
+          <img class="room-preview-img" src="{{ img.image.url }}" alt="{{ room.name }}" />
+        {% else %}
+          <div class="room-preview-img-placeholder"><i class="bi bi-building"></i></div>
+        {% endif %}
+      {% endwith %}
+      <div class="room-preview-body">
+        <div class="room-preview-cat">{% if room.category %}{{ room.category.name }}{% endif %}</div>
+        <div class="room-preview-name">{{ room.name }}</div>
+        <div class="room-preview-meta">
+          {% if room.location %}
+          <div class="room-preview-meta-row">
+            <span><i class="bi bi-geo-alt"></i> Локація</span>
+            <span>{{ room.location.city }}, {{ room.location.country }}</span>
+          </div>
+          {% endif %}
+          <div class="room-preview-meta-row">
+            <span><i class="bi bi-people"></i> Місткість</span>
+            <span>{{ room.capacity }} осіб</span>
+          </div>
+          <div class="room-preview-meta-row">
+            <span><i class="bi bi-tag"></i> Ціна/ніч</span>
+            <span class="price-highlight">{{ room.price }} ₴</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>window.ROOM_PRICE = {{ room.price }};</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/booking_form.js' %}"></script>
 {% endblock %}

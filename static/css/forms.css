@@ -1,0 +1,133 @@
+.booking-layout {
+  max-width: 1100px; margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+  display: grid; grid-template-columns: 1fr 420px;
+  gap: 2.5rem; align-items: start;
+}
+@media(max-width:900px) {
+  .booking-layout { grid-template-columns: 1fr; }
+  .booking-sidebar { order: -1; }
+}
+
+.form-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2.5rem;
+}
+.form-card h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem; font-weight: 300; color: var(--text); margin-bottom: .3rem;
+}
+.form-card .sub { color: var(--text-muted); font-size: .88rem; margin-bottom: 2rem; }
+
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media(max-width:500px) { .form-row-2 { grid-template-columns: 1fr; } }
+
+.field-group { margin-bottom: 1.3rem; }
+.field-label {
+  font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: .45rem; display: block;
+}
+.field-input {
+  width: 100%; background: rgba(255,255,255,.04);
+  border: 1px solid var(--border); border-radius: 9px;
+  color: var(--text); padding: .72rem 1rem;
+  font-size: .9rem; font-family: 'DM Sans', sans-serif;
+  transition: border-color .2s, box-shadow .2s; outline: none;
+}
+.field-input:focus {
+  border-color: var(--purple-light);
+  box-shadow: 0 0 0 3px rgba(139,92,246,.15);
+  background: rgba(255,255,255,.06);
+}
+.field-input::placeholder { color: var(--text-muted); }
+.field-input.is-invalid { border-color: rgba(248,113,113,.5); }
+.field-error { font-size: .8rem; color: #f87171; margin-top: .35rem; }
+
+input[type="datetime-local"] { color-scheme: dark; }
+select.field-input option { background: var(--card); color: var(--text); }
+textarea.field-input { resize: vertical; min-height: 100px; }
+
+.alert-form-error {
+  background: rgba(248,113,113,.08); border: 1px solid rgba(248,113,113,.25);
+  border-radius: 10px; padding: 1rem 1.2rem; color: #fca5a5;
+  font-size: .88rem; margin-bottom: 1.5rem;
+  display: flex; gap: .7rem; align-items: flex-start;
+}
+
+.submit-btn {
+  width: 100%; padding: .85rem;
+  background: linear-gradient(135deg, var(--purple) 0%, #4f46e5 100%);
+  border: none; border-radius: 10px;
+  color: #fff; font-size: .95rem; font-weight: 500; letter-spacing: .04em;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: box-shadow .25s, transform .2s;
+  box-shadow: 0 4px 24px rgba(109,40,217,.35); margin-top: .5rem;
+}
+.submit-btn:hover {
+  box-shadow: 0 8px 36px rgba(109,40,217,.5);
+  transform: translateY(-1px);
+}
+.submit-btn-pink {
+  background: linear-gradient(135deg, var(--pink) 0%, #c026d3 100%);
+  box-shadow: 0 4px 24px rgba(236,72,153,.3);
+}
+.submit-btn-pink:hover { box-shadow: 0 8px 36px rgba(236,72,153,.5); }
+
+.room-preview-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  position: sticky; top: 88px;
+}
+.room-preview-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.room-preview-img-placeholder {
+  width: 100%; aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #2d1b69, #0d0d1a);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem; color: rgba(139,92,246,.3);
+}
+.room-preview-body { padding: 1.4rem; }
+.room-preview-cat {
+  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--pink); margin-bottom: .4rem;
+}
+.room-preview-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; font-weight: 400; color: var(--text); margin-bottom: .8rem;
+}
+.room-preview-meta {
+  display: flex; flex-direction: column; gap: .5rem;
+  font-size: .84rem; color: var(--text-muted);
+  padding-top: .8rem; border-top: 1px solid var(--border);
+}
+.room-preview-meta-row { display: flex; justify-content: space-between; align-items: center; }
+.room-preview-meta-row span:last-child { color: var(--text); }
+.price-highlight {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 300; color: var(--purple-light);
+}
+
+.price-estimate-box {
+  background: rgba(109,40,217,.08); border: 1px solid rgba(109,40,217,.2);
+  border-radius: 10px; padding: 1rem; margin-bottom: 1.3rem;
+}
+
+.auth-page {
+  min-height: 80vh; display: flex; align-items: center; justify-content: center;
+  padding: 3rem 1.5rem; position: relative; overflow: hidden;
+}
+.auth-orb {
+  position: absolute; border-radius: 50%; filter: blur(60px); pointer-events: none;
+}
+.auth-box {
+  max-width: 440px; width: 100%; animation: fadeUp .5s both; position: relative; z-index: 1;
+}
+.auth-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem; font-weight: 600; color: var(--text);
+  text-decoration: none; letter-spacing: .06em;
+}
+.auth-logo span { color: var(--purple-light); }
+.auth-inner {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2.2rem;
+}

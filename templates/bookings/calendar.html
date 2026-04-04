@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Voyara — Календар бронювань{% endblock %}
+
+{% block extra_head %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="calendar-page">
+
+  <div style="margin-bottom:2rem;animation:fadeUp .4s both">
+    <p class="section-eyebrow" style="margin-bottom:.6rem">Розклад</p>
+    <h1 class="section-title">Календар <em>бронювань</em></h1>
+    <p style="color:var(--text-muted);font-size:.9rem;margin-top:.5rem">
+      Зайняті проміжки відображаються на календарі. Оберіть оселю для фільтрації.
+    </p>
+  </div>
+
+  <div class="room-filter-bar" style="animation:fadeUp .4s .1s both">
+    <button class="room-filter-chip active" data-room="all">
+      <i class="bi bi-grid-3x3-gap-fill"></i> Всі оселі
+    </button>
+    {% for room in rooms %}
+    <button class="room-filter-chip" data-room="{{ room.id }}">
+      {{ room.name }}
+    </button>
+    {% endfor %}
+  </div>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+              padding:1.5rem;animation:fadeUp .4s .2s both">
+    <div id="calendar"></div>
+  </div>
+
+  <div class="cal-legend" style="animation:fadeUp .4s .3s both">
+    <div class="legend-item">
+      <div class="legend-dot dot-confirmed"></div>
+      Підтверджено
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot dot-pending"></div>
+      Очікує підтвердження
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot dot-cancelled"></div>
+      Скасовано
+    </div>
+  </div>
+
+</div>
+
+<script>
+  window.CALENDAR_EVENTS = {{ calendar_events_json|safe }};
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="{% static 'js/calendar.js' %}"></script>
+{% endblock %}
